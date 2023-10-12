@@ -25,7 +25,6 @@ export const EmblaWrap: React.FC = () => {
 
   const handleDataChange = useCallback((data: Data[]) => {
     setSelectedData(data);
-    console.log(data);
   }, []);
   return (
     <>

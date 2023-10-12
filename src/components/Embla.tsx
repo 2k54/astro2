@@ -2,7 +2,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import styled from "styled-components";
 import type { Data } from "../type/data";
 import { SlideContent } from "./SlideContent";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 const Wrap = styled.div`
   overflow: hidden;
   .embla__container {
@@ -47,6 +47,7 @@ export const EmblaCarousel: React.FC<Props> = ({ data }) => {
     loop: true,
     align: "center",
   });
+  const containerRef = useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
   const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
@@ -73,7 +74,7 @@ export const EmblaCarousel: React.FC<Props> = ({ data }) => {
     setSelectedIndex(emblaApi.selectedScrollSnap());
     setPrevBtnDisabled(!emblaApi.canScrollPrev());
     setNextBtnDisabled(!emblaApi.canScrollNext());
-    console.log(emblaApi.selectedScrollSnap());
+    // console.log(emblaApi.selectedScrollSnap());
   }, []);
 
   useEffect(() => {
@@ -84,17 +85,18 @@ export const EmblaCarousel: React.FC<Props> = ({ data }) => {
     emblaApi.on("reInit", onSelect);
     emblaApi.on("select", onSelect);
   }, [emblaApi, onInit, onSelect]);
+
   useEffect(() => {
     if (!emblaApi) return;
-    onInit(emblaApi);
+    emblaApi.reInit();
     setSelectedIndex(0);
     emblaApi.scrollTo(0);
-  }, [data]);
+  }, [data, emblaApi]);
 
   return (
     <Wrap>
       <div className="embla" ref={emblaRef}>
-        <div className="embla__container">
+        <div className="embla__container" ref={containerRef}>
           {data.map((item) => {
             return (
               <div key={item.id} className="embla__slide">
